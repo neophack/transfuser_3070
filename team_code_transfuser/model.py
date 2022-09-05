@@ -598,10 +598,10 @@ class LidarCenterNet(nn.Module):
                         ).to(self.device)
 
         self.decoder = nn.GRUCell(input_size=4 if self.gru_concat_target_point else 2, # 2 represents x,y coordinate
-                                  hidden_size=self.config.gru_hidden_size).to(self.device)
+                                  hidden_size=self.config.gru_hidden_size).to(self.device).half()
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.output = nn.Linear(self.config.gru_hidden_size, 3).to(self.device)
+        self.output = nn.Linear(self.config.gru_hidden_size, 3).to(self.device).half()
 
         # pid controller
         self.turn_controller = PIDController(K_P=config.turn_KP, K_I=config.turn_KI, K_D=config.turn_KD, n=config.turn_n)
@@ -690,7 +690,7 @@ class LidarCenterNet(nn.Module):
 
         if self.use_target_point_image:
             lidar_bev = torch.cat((lidar_bev, target_point_image), dim=1)
-
+        rgb, lidar_bev, ego_vel=rgb.half(), lidar_bev.half(), ego_vel.half()
         if (self.backbone == 'transFuser'):
             features, image_features_grid, fused_features = self._model(rgb, lidar_bev, ego_vel)
         elif (self.backbone == 'late_fusion'):
@@ -702,7 +702,7 @@ class LidarCenterNet(nn.Module):
         else:
             raise ("The chosen vision backbone does not exist. The options are: transFuser, late_fusion, geometric_fusion, latentTF")
 
-        pred_wp, _, _, _, _ = self.forward_gru(fused_features, target_point)
+        pred_wp, _, _, _, _ = self.forward_gru(fused_features, target_point.half())
 
         preds = self.head([features[0]])
         results = self.head.get_bboxes(preds[0], preds[1], preds[2], preds[3], preds[4], preds[5], preds[6])
@@ -739,7 +739,7 @@ class LidarCenterNet(nn.Module):
 
         if self.use_target_point_image:
             lidar_bev = torch.cat((lidar_bev, target_point_image), dim=1)
-
+        rgb, lidar_bev, ego_vel=rgb.half(), lidar_bev.half(), ego_vel.half()
         if (self.backbone == 'transFuser'):
             features, image_features_grid, fused_features = self._model(rgb, lidar_bev, ego_vel)
         elif (self.backbone == 'late_fusion'):
@@ -752,7 +752,7 @@ class LidarCenterNet(nn.Module):
             raise ("The chosen vision backbone does not exist. The options are: transFuser, late_fusion, geometric_fusion, latentTF")
 
 
-        pred_wp, _, _, _, _ = self.forward_gru(fused_features, target_point)
+        pred_wp, _, _, _, _ = self.forward_gru(fused_features, target_point.half())
 
         # pred topdown view
         pred_bev = self.pred_bev(features[0])
@@ -1019,8 +1019,12 @@ class LidarCenterNet(nn.Module):
             draw.text((0, 0), "Angle error:        %.2f°" % (angle_error), font=font)
 
         bev_image = np.array(bev_image)
-
-        rgb_image = rgb[i].permute(1, 2, 0).detach().cpu().numpy()[:, :, [2, 1, 0]]
+        
+        rgb_image = rgb[i].float().permute(1, 2, 0).detach().cpu().numpy()[:, :, [2, 1, 0]]
+        maxv=np.max(rgb_image)
+        minv=np.min(rgb_image)
+        rgb_image=rgb_image/(maxv-minv)
+        rgb_image = np.array(255 * rgb_image).astype('uint8')
         rgb_image = cv2.resize(rgb_image, (1280 + 128, 320 + 32))
         assert (config.multitask)
         images = np.concatenate((bev_image, images, ds_image), axis=1)

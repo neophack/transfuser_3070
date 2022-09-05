@@ -94,7 +94,7 @@ class HybridAgent(autonomous_agent.AutonomousAgent):
                 state_dict = torch.load(os.path.join(path_to_conf_file, file), map_location='cuda:0')
                 state_dict = {k[7:]: v for k, v in state_dict.items()} # Removes the .module coming from the Distributed Training. Remove this if you want to evaluate a model trained without DDP.
                 net.load_state_dict(state_dict, strict=False)
-                net.cuda()
+                net.cuda().half()
                 net.eval()
                 self.nets.append(net)
 
@@ -255,7 +255,7 @@ class HybridAgent(autonomous_agent.AutonomousAgent):
 
         # prepare image input
         image = self.prepare_image(tick_data)
-
+        
         num_points = None
         if(self.backbone == 'latentTF'): # Image only method
             lidar_bev = torch.zeros((1, 2, self.config.lidar_resolution_width, self.config.lidar_resolution_height)).to('cuda', dtype=torch.float32) #Dummy data
@@ -269,7 +269,7 @@ class HybridAgent(autonomous_agent.AutonomousAgent):
             else:
                 lidar_bev = self.prepare_lidar(tick_data)
 
-        
+ 
         # prepare goal location input
         target_point_image, target_point = self.prepare_goal_location(tick_data)
 
@@ -480,6 +480,8 @@ class HybridAgent(autonomous_agent.AutonomousAgent):
 
     def prepare_image(self, tick_data):
         image = Image.fromarray(tick_data['rgb'])
+        cv2.imshow("rgb",cv2.cvtColor(np.asarray(image),cv2.COLOR_RGB2BGR)  )
+        cv2.waitKey(1)
         image_degrees = []
         for degree in self.aug_degrees:
             crop_shift = degree / 60 * self.config.img_width
