@@ -64,13 +64,14 @@ If you find our code or papers useful, please cite:
 Clone the repo, setup CARLA 0.9.10.1, and build the conda environment:
 
 ```Shell
-git clone https://github.com/autonomousvision/transfuser.git
+git clone https://github.com/iskybear/transfuser.git
 cd transfuser
 git checkout 2022
 chmod +x setup_carla.sh
 ./setup_carla.sh
 conda env create -f environment.yml
-conda activate tfuse
+conda activate tfuse2
+pip install torch==1.11.0+cu113 torchaudio torchvision tornado -f https://download.pytorch.org/whl/cu113/torch_stable.html
 pip install torch-scatter -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
 pip install mmcv-full==1.5.3 -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.11.0/index.html
 ```
