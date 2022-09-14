@@ -480,8 +480,8 @@ class HybridAgent(autonomous_agent.AutonomousAgent):
 
     def prepare_image(self, tick_data):
         image = Image.fromarray(tick_data['rgb'])
-        cv2.imshow("rgb",cv2.cvtColor(np.asarray(image),cv2.COLOR_RGB2BGR)  )
-        cv2.waitKey(1)
+        # cv2.imshow("rgb",cv2.cvtColor(np.asarray(image),cv2.COLOR_RGB2BGR)  )
+        # cv2.waitKey(1)
         image_degrees = []
         for degree in self.aug_degrees:
             crop_shift = degree / 60 * self.config.img_width

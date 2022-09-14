@@ -716,7 +716,7 @@ class LidarCenterNet(nn.Module):
             rotated_bboxes.append(bbox)
 
         self.i += 1
-        if debug and self.i % 2 == 0 and not (save_path is None):
+        if True or debug and self.i % 2 == 0 and not (save_path is None):
             pred_bev = self.pred_bev(features[0])
             pred_bev = F.interpolate(pred_bev, (self.config.bev_resolution_height, self.config.bev_resolution_width), mode='bilinear', align_corners=True)
             pred_semantic = self.seg_decoder(image_features_grid)
@@ -1031,4 +1031,6 @@ class LidarCenterNet(nn.Module):
 
         images = np.concatenate((rgb_image, images), axis=0)
 
-        cv2.imwrite(str(save_path + ("/%d.png" % (step // 2))), images)
+        # cv2.imwrite(str(save_path + ("/%d.png" % (step // 2))), images)
+        cv2.imshow("res",images)
+        cv2.waitKey(1)
