@@ -66,7 +66,7 @@ If you find our code or papers useful, please cite:
 Clone the repo, setup CARLA 0.9.10.1, and build the conda environment:
 
 ```Shell
-git clone https://github.com/neophack/transfuser.git
+git clone https://github.com/neophack/transfuser_3070.git
 cd transfuser
 git checkout 2022
 chmod +x setup_carla.sh
