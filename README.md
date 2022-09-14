@@ -1,5 +1,7 @@
 # TransFuser: Imitation with Transformer-Based Sensor Fusion for Autonomous Driving
 
+## [bilibili video](https://www.bilibili.com/video/BV19W4y1q7nm)
+
 ## [Paper](https://arxiv.org/abs/2205.15997) 
 
 <img src="figures/demo.gif">
@@ -64,13 +66,14 @@ If you find our code or papers useful, please cite:
 Clone the repo, setup CARLA 0.9.10.1, and build the conda environment:
 
 ```Shell
-git clone https://github.com/autonomousvision/transfuser.git
+git clone https://github.com/neophack/transfuser.git
 cd transfuser
 git checkout 2022
 chmod +x setup_carla.sh
 ./setup_carla.sh
 conda env create -f environment.yml
 conda activate tfuse
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113
 pip install torch-scatter -f https://data.pyg.org/whl/torch-1.11.0+cu113.html
 pip install mmcv-full==1.5.3 -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.11.0/index.html
 ```
